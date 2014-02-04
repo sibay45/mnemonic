@@ -4,7 +4,7 @@ from setuptools import setup
 #python setup.py sdist upload
 
 setup(name='mnemonic',
-      version='0.1',
+      version='0.6',
       description='Implementation of Bitcoin BIP-0039',
       author='Bitcoin TREZOR',
       author_email='info@bitcointrezor.com',
@@ -12,5 +12,5 @@ setup(name='mnemonic',
       packages=['mnemonic',],
       package_data={'mnemonic': ['wordlist/*.txt']},
       zip_safe=False,
-      install_requires=[],
+      install_requires=['pbkdf2'],
      )

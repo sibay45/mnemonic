@@ -23,6 +23,7 @@ import os
 import hashlib
 import hmac
 import binascii
+import unicodedata
 from pbkdf2 import PBKDF2
 
 PBKDF2_ROUNDS = 2048
@@ -41,6 +42,17 @@ class Mnemonic(object):
 	@classmethod
 	def list_languages(cls):
 		return [ f.split('.')[0] for f in os.listdir(cls._get_directory()) if f.endswith('.txt') ]
+
+	@classmethod
+	def normalize_string(cls, txt):
+		if isinstance(txt, str):
+			utxt = txt.decode('utf8')
+		elif isinstance(txt, unicode):
+			utxt = txt
+		else:
+			raise Exception("String value expected")
+
+		return unicodedata.normalize('NFKD', utxt)
 
 	@classmethod
 	def detect_language(cls, code):
@@ -89,4 +101,6 @@ class Mnemonic(object):
 
 	@classmethod
 	def to_seed(cls, mnemonic, passphrase = ''):
-		return PBKDF2(mnemonic, 'mnemonic' + passphrase, iterations = PBKDF2_ROUNDS, macmodule = hmac, digestmodule = hashlib.sha512).read(64)
+		mnemonic = cls.normalize_string(mnemonic)
+		passphrase = cls.normalize_string(passphrase)
+		return PBKDF2(mnemonic, u'mnemonic' + passphrase, iterations=PBKDF2_ROUNDS, macmodule=hmac, digestmodule=hashlib.sha512).read(64)
